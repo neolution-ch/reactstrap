@@ -18,6 +18,7 @@ class CarouselItem extends React.Component {
       startAnimation: false,
     };
 
+    this.innerRef = React.createRef();
     this.onEnter = this.onEnter.bind(this);
     this.onEntering = this.onEntering.bind(this);
     this.onExit = this.onExit.bind(this);
@@ -25,12 +26,14 @@ class CarouselItem extends React.Component {
     this.onExited = this.onExited.bind(this);
   }
 
-  onEnter(node, isAppearing) {
+  onEnter(isAppearing) {
+    const node = this.innerRef.current;
     this.setState({ startAnimation: false });
     this.props.onEnter(node, isAppearing);
   }
 
-  onEntering(node, isAppearing) {
+  onEntering(isAppearing) {
+    const node = this.innerRef.current;
     // getting this variable triggers a reflow
     const { offsetHeight } = node;
     this.setState({ startAnimation: true });
@@ -38,18 +41,21 @@ class CarouselItem extends React.Component {
     return offsetHeight;
   }
 
-  onExit(node) {
+  onExit() {
+    const node = this.innerRef.current;
     this.setState({ startAnimation: false });
     this.props.onExit(node);
   }
 
-  onExiting(node) {
+  onExiting() {
+    const node = this.innerRef.current;
     this.setState({ startAnimation: true });
     node.dispatchEvent(new CustomEvent('slide.bs.carousel'));
     this.props.onExiting(node);
   }
 
-  onExited(node) {
+  onExited() {
+    const node = this.innerRef.current;
     node.dispatchEvent(new CustomEvent('slid.bs.carousel'));
     this.props.onExited(node);
   }
@@ -71,6 +77,7 @@ class CarouselItem extends React.Component {
         enter={slide}
         exit={slide}
         in={isIn}
+        nodeRef={this.innerRef}
         onEnter={this.onEnter}
         onEntering={this.onEntering}
         onExit={this.onExit}
@@ -101,7 +108,7 @@ class CarouselItem extends React.Component {
             cssModule,
           );
 
-          return <Tag className={itemClasses}>{children}</Tag>;
+          return <Tag ref={this.innerRef} className={itemClasses}>{children}</Tag>;
         }}
       </Transition>
     );

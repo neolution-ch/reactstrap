@@ -264,7 +264,7 @@
     "classnames": "^2.2.3",
     "prop-types": "^15.5.8",
     "react-popper": "https://pkg.pr.new/manni497/react-popper@e2e836b",
-    "react-transition-group": "^4.4.2"
+    "react-transition-group": "^4.4.5"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
