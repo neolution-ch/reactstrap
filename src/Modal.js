@@ -217,7 +217,7 @@ class Modal extends React.Component {
   }
 
   handleTab(e) {
-    if (e.which !== 9) return;
+    if (e.which !== 9 && e.key !== 'Tab') return;
     if (this.modalIndex < Modal.openCount - 1) return; // last opened modal
 
     const focusableChildren = this.getFocusableChildren();
@@ -248,7 +248,7 @@ class Modal extends React.Component {
   }
 
   handleEscape(e) {
-    if (this.props.isOpen && e.keyCode === keyCodes.esc && this.props.toggle) {
+    if (this.props.isOpen && (e.keyCode === keyCodes.esc || e.key === 'Escape') && this.props.toggle) {
       if (this.props.keyboard) {
         e.preventDefault();
         e.stopPropagation();

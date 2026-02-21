@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor, screen } from '@testing-library/react';
-import user from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import {
   UncontrolledAccordion,
@@ -9,8 +9,11 @@ import {
   AccordionBody,
 } from '..';
 
+let user;
+
 beforeEach(() => {
   jest.useFakeTimers();
+  user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime.bind(jest) });
 });
 
 afterEach(() => {
@@ -60,7 +63,7 @@ describe('UncontrolledAccordion', () => {
       'show',
     );
 
-    user.click(screen.getByText(/accordion item 2/i));
+    await user.click(screen.getByText(/accordion item 2/i));
 
     expect(accordion2.querySelector('.accordion-collapse')).toHaveClass(
       'collapsing',
@@ -99,7 +102,7 @@ describe('UncontrolledAccordion', () => {
       'show',
     );
 
-    user.click(screen.getByText(/accordion item 2/i));
+    await user.click(screen.getByText(/accordion item 2/i));
 
     expect(accordion2.querySelector('.accordion-collapse')).toHaveClass(
       'collapsing',

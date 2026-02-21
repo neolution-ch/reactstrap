@@ -142,7 +142,7 @@ describe('PopperContent', () => {
           }),
         ]),
       }),
-      {},
+      undefined,
     );
   });
 

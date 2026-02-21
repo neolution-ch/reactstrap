@@ -1,7 +1,7 @@
 import React from 'react';
 import { Popper } from 'react-popper';
 import user from '@testing-library/user-event';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TooltipPopoverWrapper from '../TooltipPopoverWrapper';
 
@@ -124,7 +124,7 @@ describe('Tooltip', () => {
       </TooltipPopoverWrapper>,
     );
 
-    jest.advanceTimersByTime(150);
+    act(() => jest.advanceTimersByTime(150));
     expect(screen.queryByText(/tooltip content/i)).not.toBeInTheDocument();
   });
 
@@ -136,8 +136,8 @@ describe('Tooltip', () => {
       </TooltipPopoverWrapper>,
     );
 
-    user.click(screen.getByText(/this is the Tooltip/i));
-    jest.advanceTimersByTime(150);
+    fireEvent.click(screen.getByText(/this is the Tooltip/i));
+    act(() => jest.advanceTimersByTime(150));
     expect(toggle).toBeCalled();
     toggle.mockClear();
 
@@ -147,8 +147,8 @@ describe('Tooltip', () => {
       </TooltipPopoverWrapper>,
     );
 
-    user.click(screen.getByText(/this is the Tooltip/i));
-    jest.advanceTimersByTime(150);
+    fireEvent.click(screen.getByText(/this is the Tooltip/i));
+    act(() => jest.advanceTimersByTime(150));
     expect(toggle).toBeCalled();
   });
 
@@ -160,8 +160,8 @@ describe('Tooltip', () => {
       </TooltipPopoverWrapper>,
     );
 
-    user.click(screen.getByText(/target/i));
-    jest.advanceTimersByTime(150);
+    fireEvent.click(screen.getByText(/target/i));
+    act(() => jest.advanceTimersByTime(150));
     expect(toggle).toBeCalled();
   });
 
@@ -173,7 +173,7 @@ describe('Tooltip', () => {
       </TooltipPopoverWrapper>,
     );
 
-    user.click(screen.getByTestId('container'));
+    fireEvent.click(screen.getByTestId('container'));
     expect(toggle).not.toBeCalled();
   });
 
@@ -190,8 +190,8 @@ describe('Tooltip', () => {
       </TooltipPopoverWrapper>,
     );
 
-    user.click(screen.getByText(/target/i));
-    jest.advanceTimersByTime(200);
+    fireEvent.click(screen.getByText(/target/i));
+    act(() => jest.advanceTimersByTime(200));
 
     expect(toggle).toHaveBeenCalled();
 
@@ -211,8 +211,8 @@ describe('Tooltip', () => {
       </TooltipPopoverWrapper>,
     );
 
-    user.click(screen.getByText(/target/i));
-    jest.advanceTimersByTime(200);
+    fireEvent.click(screen.getByText(/target/i));
+    act(() => jest.advanceTimersByTime(200));
 
     expect(toggle).toHaveBeenCalled();
 
@@ -356,8 +356,8 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.click(screen.getByText(/target/i));
-      jest.advanceTimersByTime(200);
+      fireEvent.click(screen.getByText(/target/i));
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).toBeCalled();
 
       rerender(
@@ -379,7 +379,7 @@ describe('Tooltip', () => {
       </TooltipPopoverWrapper>,
     );
 
-    user.click(screen.getByText(/target/i));
+    fireEvent.click(screen.getByText(/target/i));
 
     expect(toggle).not.toHaveBeenCalled();
   });
@@ -391,7 +391,7 @@ describe('Tooltip', () => {
       </TooltipPopoverWrapper>,
     );
 
-    user.click(screen.getByText(/target/i));
+    fireEvent.click(screen.getByText(/target/i));
   });
 
   it('should not throw when passed a ref object as the target', () => {
@@ -443,12 +443,12 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.click(targets[0]);
-      jest.advanceTimersByTime(200);
+      fireEvent.click(targets[0]);
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).toHaveBeenCalledTimes(1);
 
-      user.click(targets[1]);
-      jest.advanceTimersByTime(200);
+      fireEvent.click(targets[1]);
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).toHaveBeenCalledTimes(2);
     });
 
@@ -465,8 +465,8 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.click(targets[0]);
-      jest.advanceTimersByTime(200);
+      fireEvent.click(targets[0]);
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).toHaveBeenCalledTimes(1);
     });
   });
@@ -485,11 +485,11 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.click(screen.getByText(/target/i));
+      fireEvent.click(screen.getByText(/target/i));
 
-      jest.advanceTimersByTime(100);
+      act(() => jest.advanceTimersByTime(100));
       expect(toggle).not.toBeCalled();
-      jest.advanceTimersByTime(100);
+      act(() => jest.advanceTimersByTime(100));
       expect(toggle).toBeCalled();
     });
 
@@ -506,11 +506,11 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.click(screen.getByText(/target/i));
+      fireEvent.click(screen.getByText(/target/i));
 
-      jest.advanceTimersByTime(200);
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).not.toBeCalled();
-      jest.advanceTimersByTime(200);
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).toBeCalled();
     });
 
@@ -527,11 +527,11 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.click(screen.getByText(/target/i));
+      fireEvent.click(screen.getByText(/target/i));
 
-      jest.advanceTimersByTime(10);
+      act(() => jest.advanceTimersByTime(10));
       expect(toggle).not.toBeCalled();
-      jest.advanceTimersByTime(40); // default hide value is 50
+      act(() => jest.advanceTimersByTime(40)); // default hide value is 50
       expect(toggle).toBeCalled();
     });
   });
@@ -545,9 +545,9 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.click(screen.getByText(/target/i));
+      fireEvent.click(screen.getByText(/target/i));
 
-      jest.advanceTimersByTime(200);
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).toHaveBeenCalled();
     });
   });
@@ -561,9 +561,9 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.click(screen.getByText(/target/i));
+      fireEvent.click(screen.getByText(/target/i));
 
-      jest.advanceTimersByTime(200);
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).toHaveBeenCalled();
     });
   });
@@ -583,7 +583,7 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.hover(screen.getByText(/target/i));
+      fireEvent.mouseOver(screen.getByText(/target/i));
 
       rerender(
         <TooltipPopoverWrapper
@@ -597,9 +597,9 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.unhover(screen.getByText(/target/i));
+      fireEvent.mouseOut(screen.getByText(/target/i));
 
-      jest.advanceTimersByTime(200);
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).toHaveBeenCalledTimes(1);
     });
 
@@ -617,8 +617,8 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.hover(screen.getByText(/target/i));
-      jest.advanceTimersByTime(200);
+      fireEvent.mouseOver(screen.getByText(/target/i));
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).not.toHaveBeenCalled();
     });
   });
@@ -638,7 +638,7 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.unhover(screen.getByText(/target/i));
+      fireEvent.mouseOut(screen.getByText(/target/i));
 
       rerender(
         <TooltipPopoverWrapper
@@ -652,9 +652,9 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.hover(screen.getByText(/target/i));
+      fireEvent.mouseOver(screen.getByText(/target/i));
 
-      jest.advanceTimersByTime(200);
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).toHaveBeenCalledTimes(1);
     });
 
@@ -672,8 +672,8 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.unhover(screen.getByText(/target/i));
-      jest.advanceTimersByTime(200);
+      fireEvent.mouseOut(screen.getByText(/target/i));
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).not.toHaveBeenCalled();
     });
   });
@@ -694,11 +694,11 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.hover(screen.getByText(/tooltip content/i));
-      jest.advanceTimersByTime(200);
+      fireEvent.mouseOver(screen.getByText(/tooltip content/i));
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).not.toHaveBeenCalled();
-      user.unhover(screen.getByText(/tooltip content/i));
-      jest.advanceTimersByTime(200);
+      fireEvent.mouseOut(screen.getByText(/tooltip content/i));
+      act(() => jest.advanceTimersByTime(200));
       expect(toggle).toHaveBeenCalled();
     });
 
@@ -717,11 +717,11 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.unhover(screen.getByText(/tooltip content/i));
-      user.hover(screen.getByText(/tooltip content/i));
-      user.unhover(screen.getByText(/tooltip content/i));
+      fireEvent.mouseOut(screen.getByText(/tooltip content/i));
+      fireEvent.mouseOver(screen.getByText(/tooltip content/i));
+      fireEvent.mouseOut(screen.getByText(/tooltip content/i));
 
-      jest.advanceTimersByTime(200);
+      act(() => jest.advanceTimersByTime(200));
 
       expect(toggle).toBeCalledTimes(1);
     });
@@ -741,10 +741,10 @@ describe('Tooltip', () => {
         </TooltipPopoverWrapper>,
       );
 
-      user.unhover(screen.getByText(/target/i));
-      user.hover(screen.getByText(/tooltip content/i));
+      fireEvent.mouseOut(screen.getByText(/target/i));
+      fireEvent.mouseOver(screen.getByText(/tooltip content/i));
 
-      jest.advanceTimersByTime(200);
+      act(() => jest.advanceTimersByTime(200));
 
       expect(toggle).toHaveBeenCalled();
     });

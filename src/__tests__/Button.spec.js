@@ -107,14 +107,14 @@ describe('Button', () => {
   });
 
   describe('onClick', () => {
-    it('calls props.onClick if it exists', () => {
+    it('calls props.onClick if it exists', async () => {
       const onClick = jest.fn();
       render(<Button onClick={onClick}>Testing Click</Button>);
-      user.click(screen.getByText(/testing click/i));
+      await user.click(screen.getByText(/testing click/i));
       expect(onClick).toHaveBeenCalled();
     });
 
-    it('is not called when disabled', () => {
+    it('is not called when disabled', async () => {
       const onClick = jest.fn();
       render(
         <Button onClick={onClick} disabled>
@@ -122,7 +122,7 @@ describe('Button', () => {
         </Button>,
       );
 
-      user.click(screen.getByText(/testing click/i));
+      await user.click(screen.getByText(/testing click/i));
       expect(onClick).not.toHaveBeenCalled();
     });
   });

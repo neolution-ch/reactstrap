@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { Offcanvas, OffcanvasBody, OffcanvasHeader, Button } from '..';
@@ -121,7 +121,7 @@ describe('Offcanvas', () => {
       document.getElementsByClassName('offcanvas-backdrop')[0],
     ).not.toHaveClass('show');
 
-    jest.advanceTimersByTime(20);
+    act(() => jest.advanceTimersByTime(20));
     expect(
       document.getElementsByClassName('custom-timeout-offcanvas')[0],
     ).toHaveClass('show');
@@ -257,7 +257,7 @@ describe('Offcanvas', () => {
       </Offcanvas>,
     );
 
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
 
     expect(onOpened).toHaveBeenCalledTimes(1);
     expect(onClosed).not.toHaveBeenCalled();
@@ -276,7 +276,7 @@ describe('Offcanvas', () => {
       </Offcanvas>,
     );
 
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
 
     expect(onClosed).toHaveBeenCalledTimes(1);
     expect(onOpened).not.toHaveBeenCalled();
@@ -312,7 +312,7 @@ describe('Offcanvas', () => {
       </Offcanvas>,
     );
 
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
 
     expect(onOpened).toHaveBeenCalledTimes(1);
     expect(onClosed).not.toHaveBeenCalled();
@@ -332,7 +332,7 @@ describe('Offcanvas', () => {
       </Offcanvas>,
     );
 
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
 
     expect(onClosed).toHaveBeenCalledTimes(1);
     expect(onOpened).not.toHaveBeenCalled();
@@ -346,7 +346,7 @@ describe('Offcanvas', () => {
       </Offcanvas>,
     );
 
-    user.keyboard('{esc}');
+    fireEvent.keyUp(screen.getByRole('dialog'), { key: 'Escape' });
     expect(toggle).toHaveBeenCalled();
   });
 
@@ -358,7 +358,7 @@ describe('Offcanvas', () => {
       </Offcanvas>,
     );
 
-    user.keyboard('{esc}');
+    fireEvent.keyUp(screen.getByRole('dialog'), { key: 'Escape' });
     expect(toggle).not.toHaveBeenCalled();
   });
 
@@ -370,11 +370,13 @@ describe('Offcanvas', () => {
       </Offcanvas>,
     );
 
-    user.click(screen.getByText(/does nothing/i));
+    fireEvent.click(screen.getByText(/does nothing/i));
 
     expect(toggle).not.toHaveBeenCalled();
 
-    user.click(document.getElementsByClassName('offcanvas-backdrop')[0]);
+    const backdrop = document.getElementsByClassName('offcanvas-backdrop')[0];
+    fireEvent.mouseDown(backdrop);
+    fireEvent.click(backdrop);
 
     expect(toggle).toHaveBeenCalled();
   });
@@ -387,11 +389,13 @@ describe('Offcanvas', () => {
       </Offcanvas>,
     );
 
-    user.click(screen.getByText(/does nothing/i));
+    fireEvent.click(screen.getByText(/does nothing/i));
 
     expect(toggle).not.toHaveBeenCalled();
 
-    user.click(document.getElementsByClassName('offcanvas-backdrop')[0]);
+    const backdrop = document.getElementsByClassName('offcanvas-backdrop')[0];
+    fireEvent.mouseDown(backdrop);
+    fireEvent.click(backdrop);
 
     expect(toggle).toHaveBeenCalled();
   });
@@ -411,7 +415,7 @@ describe('Offcanvas', () => {
         thor and dr.johns
       </Offcanvas>,
     );
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
     expect(element).not.toBeInTheDocument();
   });
 
@@ -430,7 +434,7 @@ describe('Offcanvas', () => {
         thor and dr.johns
       </Offcanvas>,
     );
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
     expect(element).not.toBeInTheDocument();
   });
 
@@ -464,7 +468,7 @@ describe('Offcanvas', () => {
     expect(element).toBeInTheDocument();
 
     unmount();
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
     expect(element).not.toBeInTheDocument();
   });
 
@@ -479,7 +483,7 @@ describe('Offcanvas', () => {
     );
 
     // assert that the offcanvas is closed and the body class is what was set initially
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
     expect(document.body.style.background).toBe('blue');
     expect(document.body.style.overflow).toBe('');
 
@@ -490,7 +494,7 @@ describe('Offcanvas', () => {
     );
 
     // assert that the offcanvas is open and the body class is what was set initially + offcanvas-open
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
     expect(document.body.style.background).toBe('blue');
     expect(document.body.style.overflow).toBe('hidden');
 
@@ -508,7 +512,7 @@ describe('Offcanvas', () => {
     );
 
     // assert that the offcanvas is closed and the body class is what was set initially
-    jest.advanceTimersByTime(301);
+    act(() => jest.advanceTimersByTime(301));
     expect(document.body.style.background).toBe('blue');
     expect(document.body.style.color).toBe('red');
     expect(document.body.style.overflow).toBe('');
@@ -567,7 +571,8 @@ describe('Offcanvas', () => {
     expect(screen.getByText(/yo/i).parentElement).toHaveStyle('z-index: 1');
   });
 
-  it('should allow focus on only focusable elements', () => {
+  it('should allow focus on only focusable elements', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     render(
       <Offcanvas isOpen toggle={toggle}>
         <OffcanvasHeader toggle={toggle}>Offcanvas title</OffcanvasHeader>
@@ -607,23 +612,24 @@ describe('Offcanvas', () => {
       </Offcanvas>,
     );
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByLabelText(/close/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/first test/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByLabelText(/test text input/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/second item/i).parentElement).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByLabelText(/test text area/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/test tab index/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByLabelText(/close/i)).toHaveFocus();
   });
 
-  it('should return the focus to the last focused element before the offcanvas has opened', () => {
+  it('should return the focus to the last focused element before the offcanvas has opened', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     const { rerender } = render(
       <>
         <button className="focus">Focused</button>
@@ -633,7 +639,7 @@ describe('Offcanvas', () => {
       </>,
     );
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focused/i)).toHaveFocus();
 
     rerender(
@@ -656,11 +662,12 @@ describe('Offcanvas', () => {
       </>,
     );
 
-    jest.runAllTimers();
+    act(() => jest.runAllTimers());
     expect(screen.getByText(/focused/i)).toHaveFocus();
   });
 
-  it('should not return the focus to the last focused element before the offcanvas has opened when "returnFocusAfterClose" is false', () => {
+  it('should not return the focus to the last focused element before the offcanvas has opened when "returnFocusAfterClose" is false', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     const { rerender } = render(
       <>
         <button className="focus">Focused</button>
@@ -670,7 +677,7 @@ describe('Offcanvas', () => {
       </>,
     );
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focused/i)).toHaveFocus();
 
     rerender(
@@ -693,11 +700,12 @@ describe('Offcanvas', () => {
       </>,
     );
 
-    jest.runAllTimers();
+    act(() => jest.runAllTimers());
     expect(screen.getByText(/focused/i)).not.toHaveFocus();
   });
 
-  it('should return the focus to the last focused element before the offcanvas has opened when "unmountOnClose" is false', () => {
+  it('should return the focus to the last focused element before the offcanvas has opened when "unmountOnClose" is false', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     const { rerender } = render(
       <>
         <button className="focus">Focused</button>
@@ -707,7 +715,7 @@ describe('Offcanvas', () => {
       </>,
     );
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focused/i)).toHaveFocus();
 
     rerender(
@@ -730,11 +738,12 @@ describe('Offcanvas', () => {
       </>,
     );
 
-    jest.runAllTimers();
+    act(() => jest.runAllTimers());
     expect(screen.getByText(/focused/i)).toHaveFocus();
   });
 
-  it('should not return the focus to the last focused element before the offcanvas has opened when "returnFocusAfterClose" is false and "unmountOnClose" is false', () => {
+  it('should not return the focus to the last focused element before the offcanvas has opened when "returnFocusAfterClose" is false and "unmountOnClose" is false', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     const { rerender } = render(
       <>
         <button className="focus">Focused</button>
@@ -748,7 +757,7 @@ describe('Offcanvas', () => {
       </>,
     );
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focused/i)).toHaveFocus();
 
     rerender(
@@ -775,7 +784,7 @@ describe('Offcanvas', () => {
       </>,
     );
 
-    jest.runAllTimers();
+    act(() => jest.runAllTimers());
     expect(screen.getByText(/focused/i)).not.toHaveFocus();
   });
 
@@ -809,7 +818,8 @@ describe('Offcanvas', () => {
     removeEventListener.mockRestore();
   });
 
-  it('should trap focus inside the open dialog', () => {
+  it('should trap focus inside the open dialog', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     render(
       <>
         <Button className="first">Focused</Button>
@@ -821,10 +831,10 @@ describe('Offcanvas', () => {
         </Offcanvas>
       </>,
     );
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focusable element/i)).toHaveFocus();
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focusable element/i)).toHaveFocus();
   });
 });

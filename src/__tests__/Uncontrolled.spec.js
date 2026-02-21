@@ -1,6 +1,6 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
-import user from '@testing-library/user-event';
+import { fireEvent, render, screen, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {
   Alert,
   ButtonDropdown,
@@ -15,9 +15,12 @@ import {
 import { testForDefaultClass } from '../testUtils';
 import '@testing-library/jest-dom';
 
+let user;
+
 describe('UncontrolledAlert', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime.bind(jest) });
   });
 
   afterEach(() => {
@@ -36,7 +39,7 @@ describe('UncontrolledAlert', () => {
   it('should toggle when close is clicked', async () => {
     render(<UncontrolledAlert>Yo!</UncontrolledAlert>);
     await user.click(screen.getByLabelText('Close'));
-    jest.advanceTimersByTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
     expect(screen.queryByText('Yo!')).not.toBeInTheDocument();
   });
 });
@@ -44,6 +47,7 @@ describe('UncontrolledAlert', () => {
 describe('UncontrolledButtonDropdown', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime.bind(jest) });
   });
 
   afterEach(() => {
@@ -70,7 +74,7 @@ describe('UncontrolledButtonDropdown', () => {
     );
 
     await user.click(screen.getByText('Dropdown'));
-    jest.advanceTimersByTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
     expect(screen.getByRole('menu')).toHaveClass('show');
   });
 });
@@ -78,6 +82,7 @@ describe('UncontrolledButtonDropdown', () => {
 describe('UncontrolledDropdown', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime.bind(jest) });
   });
 
   afterEach(() => {
@@ -113,16 +118,14 @@ describe('UncontrolledDropdown', () => {
 
     expect(screen.getByTestId('sandman')).not.toHaveClass('show');
     await user.click(screen.getByText('Dropdown'));
-    jest.advanceTimersByTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
     expect(screen.getByTestId('sandman')).toHaveClass('show');
   });
 
   describe('onToggle', () => {
     beforeEach(() => {
       jest.useFakeTimers();
-    });
-
-    afterEach(() => {
+        user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime.bind(jest) });
       // handleToggle.mockClear();
 
       jest.clearAllTimers();
@@ -141,7 +144,7 @@ describe('UncontrolledDropdown', () => {
 
       expect(screen.getByTestId('sandman')).toHaveClass('show');
       await user.click(document.body);
-      jest.advanceTimersByTime(1000);
+      act(() => jest.advanceTimersByTime(1000));
       expect(screen.getByTestId('sandman')).not.toHaveClass('show');
     });
 
@@ -158,7 +161,7 @@ describe('UncontrolledDropdown', () => {
 
       expect(screen.getByTestId('dream')).toHaveClass('show');
       await user.click(container);
-      jest.advanceTimersByTime(1000);
+      act(() => jest.advanceTimersByTime(1000));
       expect(screen.getByTestId('dream')).not.toHaveClass('show');
     });
 
@@ -176,7 +179,7 @@ describe('UncontrolledDropdown', () => {
       expect(screen.getByTestId('lucien')).not.toHaveClass('show');
       await user.click(screen.getByText('Toggle'));
 
-      jest.advanceTimersByTime(1000);
+      act(() => jest.advanceTimersByTime(1000));
       expect(screen.getByTestId('lucien')).toHaveClass('show');
     });
 
@@ -194,7 +197,7 @@ describe('UncontrolledDropdown', () => {
       expect(screen.getByTestId('lucien')).toHaveClass('show');
       await user.click(screen.getByText('Toggle'));
 
-      jest.advanceTimersByTime(1000);
+      act(() => jest.advanceTimersByTime(1000));
       expect(screen.getByTestId('lucien')).not.toHaveClass('show');
     });
 
@@ -213,7 +216,7 @@ describe('UncontrolledDropdown', () => {
       screen.getByText('Toggle').focus();
       expect(handleToggle.mock.calls.length).toBe(0);
 
-      await user.keyboard('{esc}');
+      fireEvent.keyDown(screen.getByText('Toggle'), { key: 'Escape' });
       expect(handleToggle.mock.calls.length).toBe(1);
     });
 
@@ -236,7 +239,7 @@ describe('UncontrolledDropdown', () => {
       screen.getByText('Toggle').focus();
       expect(handleToggle.mock.calls.length).toBe(0);
 
-      await user.keyboard('[ArrowDown]');
+      fireEvent.keyDown(screen.getByText('Toggle'), { key: 'ArrowDown' });
       expect(handleToggle.mock.calls.length).toBe(1);
     });
   });
@@ -270,7 +273,7 @@ describe('UncontrolledTooltip', () => {
     );
 
     await fireEvent.mouseOver(screen.getByText('sandman'));
-    jest.advanceTimersByTime(1000);
+    act(() => { jest.advanceTimersByTime(1000); });
     expect(screen.getByText('king of dream world')).toBeInTheDocument();
   });
 
@@ -288,7 +291,7 @@ describe('UncontrolledTooltip', () => {
     );
 
     await fireEvent.mouseOver(screen.getByText('sandman'));
-    jest.advanceTimersByTime(1000);
+    act(() => { jest.advanceTimersByTime(1000); });
 
     expect(screen.queryByText('king of dream world')).toBeInTheDocument();
   });

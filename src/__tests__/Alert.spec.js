@@ -1,14 +1,17 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import user from '@testing-library/user-event';
+import { render, screen, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { testForCustomClass, testForCustomTag } from '../testUtils';
 import { Alert } from '..';
+
+let user;
 
 describe('Alert', () => {
   beforeEach(() => {
     jest.resetModules();
     jest.useFakeTimers();
+    user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime.bind(jest) });
   });
 
   it('should render children', () => {
@@ -81,7 +84,7 @@ describe('Alert', () => {
     expect(screen.queryByText('Yo!')).toBe(null);
   });
 
-  it('should be dismissible', () => {
+  it('should be dismissible', async () => {
     const mockFn = jest.fn();
     render(
       <Alert color="danger" toggle={mockFn}>
@@ -90,7 +93,7 @@ describe('Alert', () => {
     );
     screen.getByText('Yo!');
 
-    user.click(screen.getByLabelText('Close'));
+    await user.click(screen.getByLabelText('Close'));
     expect(mockFn).toHaveBeenCalled();
   });
 
@@ -109,7 +112,7 @@ describe('Alert', () => {
 
     expect(screen.getByText(/hello/i)).not.toHaveClass('show');
 
-    jest.advanceTimersByTime(150);
+    act(() => { jest.advanceTimersByTime(150); });
     expect(screen.getByText(/hello/i)).toHaveClass('show');
   });
 

@@ -40,13 +40,38 @@ const defaultProps = {
 };
 
 const preventDefaultKeys = [
-  keyCodes.space,
-  keyCodes.enter,
-  keyCodes.up,
-  keyCodes.down,
-  keyCodes.end,
-  keyCodes.home,
+  ' ',
+  'Enter',
+  'ArrowUp',
+  'ArrowDown',
+  'End',
+  'Home',
 ];
+
+// Normalize key string from legacy keyCode for backwards compatibility
+// (fireEvent in tests may only set keyCode, while userEvent v14 only sets key)
+const keyCodeToKey = {
+  9: 'Tab',
+  13: 'Enter',
+  27: 'Escape',
+  32: ' ',
+  35: 'End',
+  36: 'Home',
+  38: 'ArrowUp',
+  40: 'ArrowDown',
+  78: 'n',
+  80: 'p',
+};
+
+function getKey(e) {
+  if (e.key && e.key !== 'Unidentified') return e.key;
+  const code = e.keyCode || e.which;
+  if (code) {
+    if (keyCodeToKey[code]) return keyCodeToKey[code];
+    if (code >= 48 && code <= 90) return String.fromCharCode(code).toLowerCase();
+  }
+  return '';
+}
 
 class Dropdown extends React.Component {
   constructor(props) {
@@ -91,7 +116,7 @@ class Dropdown extends React.Component {
   handleDocumentClick(e) {
     if (
       e &&
-      (e.which === 3 || (e.type === 'keyup' && e.which !== keyCodes.tab))
+      (e.button === 2 || (e.type === 'keyup' && getKey(e) !== 'Tab'))
     )
       return;
     const container = this.getContainer();
@@ -119,7 +144,7 @@ class Dropdown extends React.Component {
 
     if (
       ((targetIsToggle && !clickIsInInput) || clickIsInMenu) &&
-      (e.type !== 'keyup' || e.which === keyCodes.tab)
+      (e.type !== 'keyup' || getKey(e) === 'Tab')
     ) {
       return;
     }
@@ -132,7 +157,8 @@ class Dropdown extends React.Component {
       e.target.getAttribute('role') === 'menuitem' ||
       e.target.getAttribute('role') === 'option';
     const isTargetMenuCtrl = this.getMenuCtrl() === e.target;
-    const isTab = keyCodes.tab === e.which;
+    const key = getKey(e);
+    const isTab = key === 'Tab';
 
     if (
       /input|textarea/i.test(e.target.tagName) ||
@@ -143,8 +169,8 @@ class Dropdown extends React.Component {
     }
 
     if (
-      preventDefaultKeys.indexOf(e.which) !== -1 ||
-      (e.which >= 48 && e.which <= 90)
+      preventDefaultKeys.indexOf(key) !== -1 ||
+      (key.length === 1 && key.match(/[a-z0-9]/i))
     ) {
       e.preventDefault();
     }
@@ -153,57 +179,58 @@ class Dropdown extends React.Component {
 
     if (isTargetMenuCtrl) {
       if (
-        [keyCodes.space, keyCodes.enter, keyCodes.up, keyCodes.down].indexOf(
-          e.which,
-        ) > -1
+        [' ', 'Enter', 'ArrowUp', 'ArrowDown'].indexOf(key) > -1
       ) {
         // Open the menu (if not open) and focus the first menu item
         if (!this.props.isOpen) {
           this.toggle(e);
         }
-        setTimeout(() => this.getMenuItems()[0]?.focus());
+        setTimeout(() => {
+          const items = this.getMenuItems();
+          items[0]?.focus();
+        });
       } else if (this.props.isOpen && isTab) {
         // Focus the first menu item if tabbing from an open menu. We need this
         // for cases where the DropdownMenu sets a custom container, which may
         // not be the natural next item to tab to from the DropdownToggle.
         e.preventDefault();
         this.getMenuItems()[0]?.focus();
-      } else if (this.props.isOpen && e.which === keyCodes.esc) {
+      } else if (this.props.isOpen && key === 'Escape') {
         this.toggle(e);
       }
     }
 
     if (this.props.isOpen && isTargetMenuItem) {
-      if ([keyCodes.tab, keyCodes.esc].indexOf(e.which) > -1) {
+      if (['Tab', 'Escape'].indexOf(key) > -1) {
         this.toggle(e);
         this.getMenuCtrl().focus();
-      } else if ([keyCodes.space, keyCodes.enter].indexOf(e.which) > -1) {
+      } else if ([' ', 'Enter'].indexOf(key) > -1) {
         e.target.click();
         this.getMenuCtrl().focus();
       } else if (
-        [keyCodes.down, keyCodes.up].indexOf(e.which) > -1 ||
-        ([keyCodes.n, keyCodes.p].indexOf(e.which) > -1 && e.ctrlKey)
+        ['ArrowDown', 'ArrowUp'].indexOf(key) > -1 ||
+        (['n', 'N', 'p', 'P'].indexOf(key) > -1 && e.ctrlKey)
       ) {
         const $menuitems = this.getMenuItems();
         let index = $menuitems.indexOf(e.target);
-        if (keyCodes.up === e.which || (keyCodes.p === e.which && e.ctrlKey)) {
+        if (key === 'ArrowUp' || (key.toLowerCase() === 'p' && e.ctrlKey)) {
           index = index !== 0 ? index - 1 : $menuitems.length - 1;
         } else if (
-          keyCodes.down === e.which ||
-          (keyCodes.n === e.which && e.ctrlKey)
+          key === 'ArrowDown' ||
+          (key.toLowerCase() === 'n' && e.ctrlKey)
         ) {
           index = index === $menuitems.length - 1 ? 0 : index + 1;
         }
         $menuitems[index].focus();
-      } else if (keyCodes.end === e.which) {
+      } else if (key === 'End') {
         const $menuitems = this.getMenuItems();
         $menuitems[$menuitems.length - 1].focus();
-      } else if (keyCodes.home === e.which) {
+      } else if (key === 'Home') {
         const $menuitems = this.getMenuItems();
         $menuitems[0].focus();
-      } else if (e.which >= 48 && e.which <= 90) {
+      } else if (key.length === 1 && key.match(/[a-z0-9]/i)) {
         const $menuitems = this.getMenuItems();
-        const charPressed = String.fromCharCode(e.which).toLowerCase();
+        const charPressed = key.toLowerCase();
         for (let i = 0; i < $menuitems.length; i += 1) {
           const firstLetter =
             $menuitems[i].textContent &&

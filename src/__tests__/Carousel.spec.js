@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import user from '@testing-library/user-event';
 import { Carousel } from '..';
@@ -86,7 +86,7 @@ describe('Carousel', () => {
         expect(screen.getByText(/the mandalorian/i)).toHaveClass(
           'carousel-item carousel-item-start carousel-item-next',
         );
-        jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+        act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
         expect(screen.getByText(/the mandalorian/i)).toHaveClass(
           'carousel-item active',
         );
@@ -94,7 +94,7 @@ describe('Carousel', () => {
         expect(screen.getByText(/the mandalorian/i)).toHaveClass(
           'carousel-item active carousel-item-start',
         );
-        jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+        act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
         expect(screen.getByText(/the mandalorian/i)).toHaveClass(
           'carousel-item',
         );
@@ -115,7 +115,7 @@ describe('Carousel', () => {
         expect(screen.getByText(/the mandalorian/i)).toHaveClass(
           'carousel-item carousel-item-end carousel-item-prev',
         );
-        jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+        act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
         expect(screen.getByText(/the mandalorian/i)).toHaveClass(
           'carousel-item active',
         );
@@ -123,7 +123,7 @@ describe('Carousel', () => {
         expect(screen.getByText(/the mandalorian/i)).toHaveClass(
           'carousel-item active carousel-item-end',
         );
-        jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+        act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
         expect(screen.getByText(/the mandalorian/i)).toHaveClass(
           'carousel-item',
         );
@@ -143,7 +143,7 @@ describe('Carousel', () => {
         expect(callbacks.onEnter).toHaveBeenCalled();
         expect(callbacks.onEntering).toHaveBeenCalled();
         expect(callbacks.onEntered).not.toHaveBeenCalled();
-        jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+        act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
         expect(callbacks.onEntered).toHaveBeenCalled();
         expect(callbacks.onExit).not.toHaveBeenCalled();
 
@@ -151,7 +151,7 @@ describe('Carousel', () => {
         expect(callbacks.onExit).toHaveBeenCalled();
         expect(callbacks.onExiting).toHaveBeenCalled();
         expect(callbacks.onExited).not.toHaveBeenCalled();
-        jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+        act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
         expect(callbacks.onExiting).toHaveBeenCalled();
         expect(callbacks.onExited).toHaveBeenCalled();
       });
@@ -190,7 +190,7 @@ describe('Carousel', () => {
           onClickHandler={onClick}
         />,
       );
-      user.click(screen.getByLabelText(/caption 1/i));
+      fireEvent.click(screen.getByLabelText(/caption 1/i));
       expect(onClick).toHaveBeenCalled();
     });
   });
@@ -204,7 +204,7 @@ describe('Carousel', () => {
     it('should call the onClickHandler', () => {
       const onClick = jest.fn();
       render(<CarouselControl direction="next" onClickHandler={onClick} />);
-      user.click(screen.getByRole('button'));
+      fireEvent.click(screen.getByRole('button'));
       expect(onClick).toHaveBeenCalled();
     });
   });
@@ -393,7 +393,7 @@ describe('Carousel', () => {
         </Carousel>,
       );
 
-      user.click(screen.getByLabelText(/boba fett/i));
+      fireEvent.click(screen.getByLabelText(/boba fett/i));
 
       rerender(
         <Carousel activeIndex={1} next={() => {}} previous={() => {}}>
@@ -420,7 +420,7 @@ describe('Carousel', () => {
       expect(screen.getByText(/boba fett/i)).toHaveClass(
         'carousel-item carousel-item-start carousel-item-next',
       );
-      jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+      act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
       expect(screen.getByText(/boba fett/i)).toHaveClass(
         'carousel-item active',
       );
@@ -451,7 +451,7 @@ describe('Carousel', () => {
       expect(screen.getByText(/boba fett/i)).toHaveClass(
         'carousel-item carousel-item-start carousel-item-next',
       );
-      jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+      act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
       expect(screen.getByText(/boba fett/i)).toHaveClass('active');
     });
 
@@ -480,7 +480,7 @@ describe('Carousel', () => {
       expect(screen.getByText(/grogu/i)).toHaveClass(
         'carousel-item carousel-item-prev carousel-item-end',
       );
-      jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+      act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
       expect(screen.getByText(/grogu/i)).toHaveClass('active');
     });
 
@@ -509,7 +509,7 @@ describe('Carousel', () => {
       expect(screen.getByText(/grogu/i)).toHaveClass(
         'carousel-item carousel-item-start carousel-item-next',
       );
-      jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+      act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
       expect(screen.getByText(/grogu/i)).toHaveClass('active');
     });
 
@@ -540,7 +540,7 @@ describe('Carousel', () => {
         </Carousel>,
       );
 
-      user.click(screen.getByLabelText(/grogu/i));
+      fireEvent.click(screen.getByLabelText(/grogu/i));
 
       rerender(
         <Carousel
@@ -599,7 +599,7 @@ describe('Carousel', () => {
       expect(screen.getByText(/the mandalorian/i)).toHaveClass(
         'carousel-item carousel-item-end carousel-item-prev',
       );
-      jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+      act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
       expect(screen.getByText(/the mandalorian/i)).toHaveClass('active');
     });
 
@@ -630,7 +630,7 @@ describe('Carousel', () => {
         </Carousel>,
       );
 
-      user.click(screen.getByLabelText(/the mandalorian/i));
+      fireEvent.click(screen.getByLabelText(/the mandalorian/i));
 
       rerender(
         <Carousel
@@ -661,7 +661,7 @@ describe('Carousel', () => {
       expect(screen.getByText(/the mandalorian/i)).toHaveClass(
         'carousel-item carousel-item-start carousel-item-next',
       );
-      jest.advanceTimersByTime(DEFAULT_TIMER_TIME);
+      act(() => jest.advanceTimersByTime(DEFAULT_TIMER_TIME));
       expect(screen.getByText(/the mandalorian/i)).toHaveClass('active');
     });
   });
