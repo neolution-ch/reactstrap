@@ -17,9 +17,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 16
 
-      - run: yarn --frozen-lockfile
+      - run: rm -rf node_modules && yarn --frozen-lockfile
 
       # append the git commit to the package.json version.
       # We do this because some cache mechanisms (like nextjs) don't work well with the same version and ignore the changes
