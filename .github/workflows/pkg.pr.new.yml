@@ -26,4 +26,6 @@ jobs:
       # until you manually delete the caches
       - run: jq '.version = .version + "-" + env.GITHUB_SHA' package.json > package.json.tmp && mv package.json.tmp package.json
 
+      - run: yarn build
+
       - run: npx pkg-pr-new publish
