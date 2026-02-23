@@ -1,6 +1,6 @@
 {
   "name": "@neolution-ch/reactstrap",
-  "version": "9.2.3",
+  "version": "10.0.0-rc.0",
   "description": "React Bootstrap components",
   "source": "src/index.js",
   "main": "lib/index.js",
@@ -328,7 +328,7 @@
     "typescript": "^4.0.3",
     "webpack": "^4.43.0"
   },
-   "publishConfig": {
+  "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org"
   }
