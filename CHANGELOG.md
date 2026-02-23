@@ -507,4 +507,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### dependabot: \#3 build(deps): bump sha.js from 2.4.11 to 2.4.12
+
 - Added support for React 19
