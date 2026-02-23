@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { Reference } from 'react-popper';
+import { Reference } from '@neolution-ch/react-popper';
 import { DropdownContext } from './DropdownContext';
 import { mapToCssModules, tagPropType } from './utils';
 import Button from './Button';
