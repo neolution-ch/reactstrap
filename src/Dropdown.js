@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Manager } from 'react-popper';
 import classNames from 'classnames';
 import { DropdownContext } from './DropdownContext';
-import { mapToCssModules, omit, keyCodes, tagPropType } from './utils';
+import { mapToCssModules, omit, tagPropType } from './utils';
 import { InputGroupContext } from './InputGroupContext';
 
 const propTypes = {
