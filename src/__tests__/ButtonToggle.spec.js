@@ -16,15 +16,15 @@ describe('ButtonToggle', () => {
   });
 
   describe('onClick', () => {
-    it('calls props.onClick if it exists', () => {
+    it('calls props.onClick if it exists', async () => {
       const onClick = jest.fn();
       render(<ButtonToggle onClick={onClick}>Testing Click</ButtonToggle>);
 
-      user.click(screen.getByText(/testing click/i));
+      await user.click(screen.getByText(/testing click/i));
       expect(onClick).toHaveBeenCalled();
     });
 
-    it('should not call props.onClick if it exists and button is disabled', () => {
+    it('should not call props.onClick if it exists and button is disabled', async () => {
       const onClick = jest.fn();
       render(
         <ButtonToggle onClick={onClick} disabled>
@@ -32,7 +32,7 @@ describe('ButtonToggle', () => {
         </ButtonToggle>,
       );
 
-      user.click(screen.getByText(/testing click/i));
+      await user.click(screen.getByText(/testing click/i));
       expect(onClick).not.toHaveBeenCalled();
     });
   });

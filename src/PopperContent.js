@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
-import { Popper as ReactPopper } from 'react-popper';
+import { Popper as ReactPopper } from '@neolution-ch/react-popper';
 import {
   getTarget,
   targetPropType,

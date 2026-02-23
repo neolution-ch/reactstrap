@@ -36,11 +36,11 @@ describe('NavLink', () => {
     expect(screen.getByText('Yo!')).toHaveAttribute('disabled');
   });
 
-  it('handles onClick prop', () => {
+  it('handles onClick prop', async () => {
     const onClick = jest.fn();
     render(<NavLink onClick={onClick}>testing click</NavLink>);
 
-    user.click(screen.getByText(/testing click/i));
+    await user.click(screen.getByText(/testing click/i));
     expect(onClick).toHaveBeenCalled();
   });
 
@@ -62,7 +62,7 @@ describe('NavLink', () => {
     expect(click.defaultPrevented).toBeTruthy();
   });
 
-  it('is not called when disabled', () => {
+  it('is not called when disabled', async () => {
     const onClick = jest.fn();
     render(
       <NavLink onClick={onClick} disabled>
@@ -70,7 +70,7 @@ describe('NavLink', () => {
       </NavLink>,
     );
 
-    user.click(screen.getByText(/testing click/i));
+    await user.click(screen.getByText(/testing click/i));
     expect(onClick).not.toHaveBeenCalled();
   });
 });

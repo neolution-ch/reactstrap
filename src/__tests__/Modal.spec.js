@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from '..';
@@ -391,7 +391,7 @@ describe('Modal', () => {
         Yo!
       </Modal>,
     );
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
     expect(onOpened).toHaveBeenCalledTimes(1);
 
     rerender(
@@ -405,7 +405,7 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
     expect(onOpened).toHaveBeenCalledTimes(1);
     expect(onClosed).toHaveBeenCalledTimes(1);
   });
@@ -439,7 +439,7 @@ describe('Modal', () => {
         Yo!
       </Modal>,
     );
-    jest.advanceTimersByTime(1);
+    act(() => jest.advanceTimersByTime(1));
 
     expect(onOpened).toHaveBeenCalledTimes(1);
     expect(onClosed).not.toHaveBeenCalled();
@@ -455,7 +455,7 @@ describe('Modal', () => {
         Yo!
       </Modal>,
     );
-    jest.advanceTimersByTime(1);
+    act(() => jest.advanceTimersByTime(1));
 
     expect(onClosed).toHaveBeenCalledTimes(1);
     expect(onOpened).toHaveBeenCalledTimes(1);
@@ -469,10 +469,10 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    user.keyboard('{enter}');
+    fireEvent.keyUp(document.getElementsByClassName('modal')[0], { key: 'Enter', keyCode: 13 });
     expect(toggle).not.toHaveBeenCalled();
 
-    user.keyboard('{esc}');
+    fireEvent.keyUp(document.getElementsByClassName('modal')[0], { key: 'Escape', keyCode: 27 });
     expect(toggle).toHaveBeenCalled();
   });
 
@@ -484,7 +484,7 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    user.keyboard('{esc}');
+    fireEvent.keyUp(document.getElementsByClassName('modal')[0], { key: 'Escape', keyCode: 27 });
     expect(toggle).not.toHaveBeenCalled();
   });
 
@@ -496,10 +496,14 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    user.click(screen.getByText(/does nothing/i));
+    const buttonEl = screen.getByText(/does nothing/i);
+    fireEvent.mouseDown(buttonEl);
+    fireEvent.click(buttonEl);
     expect(toggle).not.toHaveBeenCalled();
 
-    user.click(document.body.getElementsByClassName('modal')[0]);
+    const modalEl = document.body.getElementsByClassName('modal')[0];
+    fireEvent.mouseDown(modalEl);
+    fireEvent.click(modalEl);
     expect(toggle).toHaveBeenCalled();
   });
 
@@ -511,7 +515,7 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    user.click(document.getElementsByClassName('modal-backdrop')[0]);
+    fireEvent.click(document.getElementsByClassName('modal-backdrop')[0]);
     expect(toggle).not.toHaveBeenCalled();
   });
 
@@ -523,7 +527,7 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    user.keyboard('{esc}');
+    fireEvent.keyUp(document.getElementsByClassName('modal')[0], { key: 'Escape', keyCode: 27 });
     expect(toggle).not.toHaveBeenCalled();
   });
 
@@ -535,7 +539,7 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    user.keyboard('{esc}');
+    fireEvent.keyUp(document.getElementsByClassName('modal')[0], { key: 'Escape', keyCode: 27 });
     expect(toggle).toHaveBeenCalled();
   });
 
@@ -552,13 +556,15 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    user.keyboard('{esc}');
+    act(() => {
+      fireEvent.keyUp(document.getElementsByClassName('modal')[0], { key: 'Escape', keyCode: 27 });
+    });
 
     expect(screen.getByTestId('mandalorian').parentElement).toHaveClass(
       'modal-static',
     );
 
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
 
     expect(screen.getByTestId('mandalorian').parentElement).not.toHaveClass(
       'modal-static',
@@ -572,13 +578,17 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    user.click(document.getElementsByClassName('modal')[0]);
+    const backdropModalEl = document.getElementsByClassName('modal')[0];
+    act(() => {
+      fireEvent.mouseDown(backdropModalEl);
+      fireEvent.click(backdropModalEl);
+    });
 
     expect(screen.getByTestId('mandalorian').parentElement).toHaveClass(
       'modal-static',
     );
 
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
 
     expect(screen.getByTestId('mandalorian').parentElement).not.toHaveClass(
       'modal-static',
@@ -592,7 +602,9 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    user.click(document.getElementsByClassName('modal-dialog')[0]);
+    const modalDialogEl = document.getElementsByClassName('modal-dialog')[0];
+    fireEvent.mouseDown(modalDialogEl);
+    fireEvent.click(modalDialogEl);
 
     expect(screen.getByTestId('mandalorian').parentElement).not.toHaveClass(
       'modal-static',
@@ -615,7 +627,7 @@ describe('Modal', () => {
         <button id="clicker">Does Nothing</button>
       </Modal>,
     );
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
     expect(element).not.toBeInTheDocument();
   });
 
@@ -640,7 +652,7 @@ describe('Modal', () => {
         <button id="clicker">Does Nothing</button>
       </Modal>,
     );
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
     expect(element).not.toBeInTheDocument();
   });
 
@@ -735,7 +747,7 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    jest.advanceTimersByTime(300);
+    act(() => jest.advanceTimersByTime(300));
     expect(document.body.className).toBe('my-modal-opened modal-opened');
   });
 
@@ -797,7 +809,8 @@ describe('Modal', () => {
     ).toBe('1');
   });
 
-  it('should allow focus on only focusable elements and tab through them', () => {
+  it('should allow focus on only focusable elements and tab through them', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     render(
       <Modal isOpen toggle={toggle}>
         <ModalHeader toggle={toggle}>Modal title</ModalHeader>
@@ -845,25 +858,26 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByLabelText(/close/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/first test/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByLabelText(/test text input/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/second item/i).parentElement).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByLabelText(/test text area/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/test tab index/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/cancel/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByLabelText(/close/i)).toHaveFocus();
   });
 
-  it('should return the focus to the last focused element before the modal has opened', () => {
+  it('should return the focus to the last focused element before the modal has opened', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     const { rerender } = render(
       <>
         <button className="focus">Focused</button>
@@ -873,7 +887,7 @@ describe('Modal', () => {
       </>,
     );
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focused/i)).toHaveFocus();
 
     rerender(
@@ -894,11 +908,12 @@ describe('Modal', () => {
       </>,
     );
 
-    jest.runAllTimers();
+    act(() => jest.runAllTimers());
     expect(screen.getByText(/focused/i)).toHaveFocus();
   });
 
-  it('should not return the focus to the last focused element before the modal has opened when "returnFocusAfterClose" is false', () => {
+  it('should not return the focus to the last focused element before the modal has opened when "returnFocusAfterClose" is false', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     const { rerender } = render(
       <>
         <button className="focus">Focused</button>
@@ -908,7 +923,7 @@ describe('Modal', () => {
       </>,
     );
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focused/i)).toHaveFocus();
 
     rerender(
@@ -929,11 +944,12 @@ describe('Modal', () => {
       </>,
     );
 
-    jest.runAllTimers();
+    act(() => jest.runAllTimers());
     expect(screen.getByText(/focused/i)).not.toHaveFocus();
   });
 
-  it('should return the focus to the last focused element before the modal has opened when "unmountOnClose" is false', () => {
+  it('should return the focus to the last focused element before the modal has opened when "unmountOnClose" is false', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     const { rerender } = render(
       <>
         <button className="focus">Focused</button>
@@ -943,7 +959,7 @@ describe('Modal', () => {
       </>,
     );
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focused/i)).toHaveFocus();
 
     rerender(
@@ -964,11 +980,12 @@ describe('Modal', () => {
       </>,
     );
 
-    jest.runAllTimers();
+    act(() => jest.runAllTimers());
     expect(screen.getByText(/focused/i)).toHaveFocus();
   });
 
-  it('should not return the focus to the last focused element before the modal has opened when "returnFocusAfterClose" is false and "unmountOnClose" is false', () => {
+  it('should not return the focus to the last focused element before the modal has opened when "returnFocusAfterClose" is false and "unmountOnClose" is false', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     const { rerender } = render(
       <>
         <button className="focus">Focused</button>
@@ -982,7 +999,7 @@ describe('Modal', () => {
       </>,
     );
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focused/i)).toHaveFocus();
 
     rerender(
@@ -1007,7 +1024,7 @@ describe('Modal', () => {
       </>,
     );
 
-    jest.runAllTimers();
+    act(() => jest.runAllTimers());
     expect(screen.getByText(/focused/i)).not.toHaveFocus();
   });
 
@@ -1043,7 +1060,8 @@ describe('Modal', () => {
     removeEventListener.mockRestore();
   });
 
-  it('should trap focus inside the open dialog', () => {
+  it('should trap focus inside the open dialog', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     const { rerender } = render(
       <>
         <Button className="first">Focused</Button>
@@ -1072,18 +1090,19 @@ describe('Modal', () => {
       </>,
     );
 
-    jest.runAllTimers();
+    act(() => jest.runAllTimers());
     expect(screen.getByText(/focused/i)).not.toHaveFocus();
 
     expect(screen.getByTestId('modal').parentElement).toHaveFocus();
     // pressing tab shouldn't move focus outside the modal
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focusable element/i)).toHaveFocus();
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/focusable element/i)).toHaveFocus();
   });
 
-  it('tab should focus on inside modal children for nested modal', () => {
+  it('tab should focus on inside modal children for nested modal', async () => {
+    const localUser = user.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
     render(
       <Modal isOpen toggle={toggle}>
         <ModalBody>
@@ -1099,10 +1118,10 @@ describe('Modal', () => {
       </Modal>,
     );
 
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/click 1/i)).toHaveFocus();
     // pressing tab doesn't take focus out of inside modal
-    user.tab();
+    await localUser.tab();
     expect(screen.getByText(/click 1/i)).toHaveFocus();
   });
 

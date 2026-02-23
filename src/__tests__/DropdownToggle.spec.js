@@ -109,33 +109,33 @@ describe('DropdownToggle', () => {
   });
 
   describe('onClick', () => {
-    it('should call props.onClick if it exists', () => {
+    it('should call props.onClick if it exists', async () => {
       const onClick = jest.fn();
       customDropdownRender(
         <DropdownToggle onClick={onClick}>Ello world</DropdownToggle>,
         contextProps,
       );
 
-      user.click(screen.getByText(/ello world/i));
+      await user.click(screen.getByText(/ello world/i));
 
       expect(onClick).toHaveBeenCalledTimes(1);
     });
 
-    it('should call context.toggle when present ', () => {
+    it('should call context.toggle when present ', async () => {
       contextProps.toggle = jest.fn();
       const { container } = customDropdownRender(
         <DropdownToggle>Ello world</DropdownToggle>,
         contextProps,
       );
 
-      user.click(screen.getByText(/ello world/i));
+      await user.click(screen.getByText(/ello world/i));
 
       expect(contextProps.toggle).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('disabled', () => {
-    it('should not call onClick when disabled', () => {
+    it('should not call onClick when disabled', async () => {
       const onClick = jest.fn();
       customDropdownRender(
         <DropdownToggle disabled onClick={onClick}>
@@ -144,7 +144,7 @@ describe('DropdownToggle', () => {
         contextProps,
       );
 
-      user.click(screen.getByText(/ello world/i));
+      await user.click(screen.getByText(/ello world/i));
 
       expect(onClick).not.toBeCalled();
     });

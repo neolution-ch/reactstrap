@@ -82,40 +82,40 @@ describe('DropdownItem', () => {
   });
 
   describe('onClick', () => {
-    it('should not be called when disabled', () => {
+    it('should not be called when disabled', async () => {
       const onClick = jest.fn();
       render(
         <DropdownItem disabled onClick={onClick}>
           Item
         </DropdownItem>,
       );
-      user.click(screen.getByText('Item'));
+      await user.click(screen.getByText('Item'));
       expect(onClick).not.toHaveBeenCalled();
     });
 
-    it('should not be called when divider is set', () => {
+    it('should not be called when divider is set', async () => {
       const onClick = jest.fn();
       render(
         <DropdownItem divider onClick={onClick}>
           Item
         </DropdownItem>,
       );
-      user.click(screen.getByText('Item'));
+      await user.click(screen.getByText('Item'));
       expect(onClick).not.toHaveBeenCalled();
     });
 
-    it('should not be called when header item', () => {
+    it('should not be called when header item', async () => {
       const onClick = jest.fn();
       render(
         <DropdownItem header onClick={onClick}>
           Item
         </DropdownItem>,
       );
-      user.click(screen.getByText('Item'));
+      await user.click(screen.getByText('Item'));
       expect(onClick).not.toHaveBeenCalled();
     });
 
-    it('should be called when not disabled, heading, or divider', () => {
+    it('should be called when not disabled, heading, or divider', async () => {
       const onClick = jest.fn();
       customDropdownRender(
         <DropdownItem onClick={onClick}>Item</DropdownItem>,
@@ -123,11 +123,11 @@ describe('DropdownItem', () => {
           toggle: () => {},
         },
       );
-      user.click(screen.getByText(/item/i));
+      await user.click(screen.getByText(/item/i));
       expect(onClick).toBeCalled();
     });
 
-    it('should call toggle', () => {
+    it('should call toggle', async () => {
       const toggle = jest.fn();
       customDropdownRender(
         <DropdownItem onClick={() => {}}>Item</DropdownItem>,
@@ -135,7 +135,7 @@ describe('DropdownItem', () => {
           toggle,
         },
       );
-      user.click(screen.getByText(/item/i));
+      await user.click(screen.getByText(/item/i));
       expect(toggle).toHaveBeenCalled();
     });
   });

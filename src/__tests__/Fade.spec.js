@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import user from '@testing-library/user-event';
+import { render, screen, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { TransitionGroup } from 'react-transition-group';
 import { Fade } from '..';
 import { testForCustomTag } from '../testUtils';
@@ -34,16 +34,19 @@ class Helper extends React.Component {
   }
 }
 
+let user;
+
 describe('Fade', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime.bind(jest) });
   });
 
   afterEach(() => {
     jest.clearAllTimers();
   });
 
-  it('should transition classes from "fade" to "fade show" on appear', () => {
+  it('should transition classes from "fade" to "fade show" on appear', async () => {
     render(
       <Helper showItem>
         <Fade>Yo!</Fade>
@@ -56,14 +59,14 @@ describe('Fade', () => {
     expect(screen.getByText('Yo 2!')).toHaveClass('fade');
     expect(screen.getByText('Yo 2!')).toHaveClass('show');
 
-    jest.advanceTimersByTime(300);
+    act(() => { jest.advanceTimersByTime(300); });
 
     expect(screen.getByText('Yo!')).toHaveClass('fade');
     expect(screen.getByText('Yo!')).toHaveClass('show');
     expect(screen.getByText('Yo 2!')).toHaveClass('fade');
     expect(screen.getByText('Yo 2!')).toHaveClass('show');
 
-    user.click(document.getElementsByClassName('trigger')[0]);
+    await user.click(document.getElementsByClassName('trigger')[0]);
 
     expect(screen.getByText('Yo!')).toHaveClass('fade');
     expect(screen.getByText('Yo!')).not.toHaveClass('show');
@@ -71,7 +74,7 @@ describe('Fade', () => {
     expect(screen.getByText('Yo 2!')).not.toHaveClass('show');
   });
 
-  it('should transition classes from "fade" to "fade show" on enter', () => {
+  it('should transition classes from "fade" to "fade show" on enter', async () => {
     const onEnter = jest.fn();
     const onExit = jest.fn();
     render(
@@ -88,20 +91,20 @@ describe('Fade', () => {
     expect(document.getElementsByClassName('fade').length).toBe(0);
     expect(document.getElementsByClassName('fade show').length).toBe(0);
 
-    user.click(document.getElementsByClassName('trigger')[0]);
+    await user.click(document.getElementsByClassName('trigger')[0]);
 
     expect(onEnter).toHaveBeenCalled();
     expect(onExit).not.toHaveBeenCalled();
     expect(document.getElementsByClassName('fade').length).toBe(2);
     expect(document.getElementsByClassName('fade show').length).toBe(1);
 
-    jest.advanceTimersByTime(300);
+    act(() => { jest.advanceTimersByTime(300); });
 
     expect(onEnter).toHaveBeenCalled();
     expect(onExit).not.toHaveBeenCalled();
     expect(document.getElementsByClassName('fade show').length).toBe(2);
 
-    user.click(document.getElementsByClassName('trigger')[0]);
+    await user.click(document.getElementsByClassName('trigger')[0]);
 
     expect(onExit).toHaveBeenCalled();
     expect(document.getElementsByClassName('fade show').length).toBe(0);

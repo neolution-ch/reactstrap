@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import user from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import { Carousel, UncontrolledCarousel } from '..';
 
 const items = [
@@ -25,9 +25,12 @@ const items = [
   },
 ];
 
+let user;
+
 describe('UncontrolledCarousel', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime.bind(jest) });
   });
 
   afterEach(() => {
@@ -42,11 +45,11 @@ describe('UncontrolledCarousel', () => {
   it('should autoplay by default', () => {
     render(<UncontrolledCarousel items={items} />);
     expect(screen.getByAltText('a').parentElement).toHaveClass('active');
-    jest.advanceTimersByTime(5000);
+    act(() => { jest.advanceTimersByTime(5000); });
     expect(screen.getByAltText('b').parentElement).toHaveClass(
       'carousel-item carousel-item-start carousel-item-next',
     );
-    jest.advanceTimersByTime(600);
+    act(() => { jest.advanceTimersByTime(600); });
     expect(screen.getByAltText('b').parentElement).toHaveClass('active');
   });
 
@@ -61,73 +64,73 @@ describe('UncontrolledCarousel', () => {
     expect(screen.getByAltText('b').parentElement).not.toHaveClass('active');
   });
 
-  it('should move to next slide when next button is clicked', () => {
+  it('should move to next slide when next button is clicked', async () => {
     render(<UncontrolledCarousel items={items} autoPlay={false} />);
-    user.click(screen.getByText(/next/i));
-    jest.advanceTimersByTime(600);
+    await user.click(screen.getByText(/next/i));
+    act(() => { jest.advanceTimersByTime(600); });
     expect(screen.getByAltText('b').parentElement).toHaveClass(
       'carousel-item active',
     );
   });
 
-  it('should not move to next slide while animating', () => {
+  it('should not move to next slide while animating', async () => {
     render(<UncontrolledCarousel items={items} />);
-    user.click(screen.getByText(/next/i));
+    await user.click(screen.getByText(/next/i));
     expect(screen.getByAltText('b').parentElement).toHaveClass(
       'carousel-item carousel-item-start carousel-item-next',
     );
-    user.click(screen.getByText(/next/i));
+    await user.click(screen.getByText(/next/i));
     expect(screen.getByAltText('c').parentElement).not.toHaveClass(
       'carousel-item carousel-item-start carousel-item-next',
     );
   });
 
-  it('should wrap to first slide on reaching the end', () => {
+  it('should wrap to first slide on reaching the end', async () => {
     render(<UncontrolledCarousel items={items} autoPlay={false} />);
-    user.click(screen.getByText(/next/i));
-    jest.advanceTimersByTime(600);
+    await user.click(screen.getByText(/next/i));
+    act(() => { jest.advanceTimersByTime(600); });
     expect(screen.getByAltText('b').parentElement).toHaveClass('active');
 
-    user.click(screen.getByText(/next/i));
-    jest.advanceTimersByTime(600);
+    await user.click(screen.getByText(/next/i));
+    act(() => { jest.advanceTimersByTime(600); });
     expect(screen.getByAltText('c').parentElement).toHaveClass('active');
 
-    user.click(screen.getByText(/next/i));
-    jest.advanceTimersByTime(600);
+    await user.click(screen.getByText(/next/i));
+    act(() => { jest.advanceTimersByTime(600); });
     expect(screen.getByAltText('a').parentElement).toHaveClass('active');
   });
 
-  it('should move to previous slide when previous button is clicked', () => {
+  it('should move to previous slide when previous button is clicked', async () => {
     render(<UncontrolledCarousel items={items} autoPlay={false} />);
-    user.click(screen.getByText(/next/i));
-    jest.advanceTimersByTime(600);
+    await user.click(screen.getByText(/next/i));
+    act(() => { jest.advanceTimersByTime(600); });
     expect(screen.getByAltText('b').parentElement).toHaveClass(
       'carousel-item active',
     );
 
-    user.click(screen.getByText(/previous/i));
-    jest.advanceTimersByTime(600);
+    await user.click(screen.getByText(/previous/i));
+    act(() => { jest.advanceTimersByTime(600); });
     expect(screen.getByAltText('a').parentElement).toHaveClass(
       'carousel-item active',
     );
   });
 
-  it('should not move to previous slide while animating', () => {
+  it('should not move to previous slide while animating', async () => {
     render(<UncontrolledCarousel items={items} />);
-    user.click(screen.getByText(/next/i));
+    await user.click(screen.getByText(/next/i));
     expect(screen.getByAltText('b').parentElement).toHaveClass(
       'carousel-item carousel-item-start carousel-item-next',
     );
-    user.click(screen.getByText(/previous/i));
+    await user.click(screen.getByText(/previous/i));
     expect(screen.getByAltText('a').parentElement).not.toHaveClass(
       'carousel-item carousel-item-start carousel-item-next',
     );
   });
 
-  it('should wrap to last slide on reaching the beginning', () => {
+  it('should wrap to last slide on reaching the beginning', async () => {
     render(<UncontrolledCarousel items={items} autoPlay={false} />);
-    user.click(screen.getByText(/previous/i));
-    jest.advanceTimersByTime(600);
+    await user.click(screen.getByText(/previous/i));
+    act(() => { jest.advanceTimersByTime(600); });
     expect(screen.getByAltText('c').parentElement).toHaveClass('active');
   });
 });

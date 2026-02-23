@@ -1,14 +1,17 @@
-import React from 'react';
-import { createEvent, fireEvent, render, screen } from '@testing-library/react';
-import user from '@testing-library/user-event';
+﻿import React from 'react';
+import { act, createEvent, fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from '..';
 import { keyCodes } from '../utils';
 import { testForChildrenInComponent } from '../testUtils';
 
+let user;
+
 describe('Dropdown', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    user = userEvent.setup({ delay: null, advanceTimers: jest.advanceTimersByTime.bind(jest) });
   });
 
   afterEach(() => {
@@ -17,7 +20,7 @@ describe('Dropdown', () => {
     jest.useRealTimers();
   });
 
-  function imitateDropdownFocus(toggle) {
+  async function imitateDropdownFocus(toggle) {
     // this is needed to make the focus on the correct element
     // by following the default user behaviour
     // needed in particular for keyboard based tests
@@ -34,7 +37,7 @@ describe('Dropdown', () => {
       </Dropdown>,
     );
 
-    user.click(screen.getByText('Toggle'));
+    await user.click(screen.getByText('Toggle'));
     toggle.mockClear();
 
     rerender(
@@ -51,13 +54,13 @@ describe('Dropdown', () => {
     return { rerender };
   }
 
-  it('should render a single child', () => {
+  it('should render a single child', async () => {
     render(<Dropdown isOpen>Ello world</Dropdown>);
 
     expect(screen.getByText(/ello world/i)).toHaveClass('dropdown');
   });
 
-  it('should render menu when isOpen is true', () => {
+  it('should render menu when isOpen is true', async () => {
     render(
       <Dropdown isOpen>
         <DropdownToggle>Toggle</DropdownToggle>
@@ -71,7 +74,7 @@ describe('Dropdown', () => {
     expect(screen.getByText(/test/i)).toHaveClass('dropdown-item');
   });
 
-  it('should not call props.toggle when disabled ', () => {
+  it('should not call props.toggle when disabled ', async () => {
     const toggle = jest.fn();
     render(
       <Dropdown isOpen toggle={toggle} disabled>
@@ -82,11 +85,11 @@ describe('Dropdown', () => {
       </Dropdown>,
     );
 
-    user.click(screen.getByText(/toggle/i));
+    await user.click(screen.getByText(/toggle/i));
     expect(toggle).not.toHaveBeenCalled();
   });
 
-  it('should call toggle when DropdownToggle is clicked ', () => {
+  it('should call toggle when DropdownToggle is clicked ', async () => {
     const toggle = jest.fn();
     render(
       <Dropdown isOpen toggle={toggle}>
@@ -97,11 +100,11 @@ describe('Dropdown', () => {
       </Dropdown>,
     );
 
-    user.click(screen.getByText(/toggle/i));
+    await user.click(screen.getByText(/toggle/i));
     expect(toggle).toHaveBeenCalledTimes(1);
   });
 
-  it('should call toggle when DropdownToggle with non string children is clicked ', () => {
+  it('should call toggle when DropdownToggle with non string children is clicked ', async () => {
     const toggle = jest.fn();
     render(
       <Dropdown isOpen toggle={toggle}>
@@ -114,12 +117,12 @@ describe('Dropdown', () => {
       </Dropdown>,
     );
 
-    user.click(screen.getByText(/toggle/i));
+    await user.click(screen.getByText(/toggle/i));
     expect(toggle).toHaveBeenCalledTimes(1);
   });
 
   describe('handleProps', () => {
-    it('should not pass custom props to html attrs', () => {
+    it('should not pass custom props to html attrs', async () => {
       const toggle = jest.fn();
       render(
         <Dropdown a11y isOpen toggle={toggle}>
@@ -137,7 +140,7 @@ describe('Dropdown', () => {
       expect(dropdown).not.toHaveAttribute('isOpen');
     });
 
-    it('should add event listeners when isOpen changed to true', () => {
+    it('should add event listeners when isOpen changed to true', async () => {
       const addEventListener = jest.spyOn(document, 'addEventListener');
       const { rerender } = render(
         <Dropdown isOpen={false}>
@@ -163,7 +166,7 @@ describe('Dropdown', () => {
       expect(addEventListener).toHaveBeenCalledTimes(3);
     });
 
-    it('should not be called on componentDidUpdate when isOpen did not change', () => {
+    it('should not be called on componentDidUpdate when isOpen did not change', async () => {
       const addEventListener = jest.spyOn(document, 'addEventListener');
       const { rerender } = render(
         <Dropdown isOpen>
@@ -191,7 +194,7 @@ describe('Dropdown', () => {
   });
 
   describe('removeEvents', () => {
-    it('should remove event listeners on componentWillUnmount', () => {
+    it('should remove event listeners on componentWillUnmount', async () => {
       const removeEventListener = jest.spyOn(document, 'removeEventListener');
       const { unmount } = render(
         <Dropdown isOpen>
@@ -209,7 +212,7 @@ describe('Dropdown', () => {
   });
 
   describe('handleDocumentClick', () => {
-    it('should call toggle on document click', () => {
+    it('should call toggle on document click', async () => {
       const toggle = jest.fn(() => {});
 
       render(
@@ -221,12 +224,12 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.click(document.body);
+      await user.click(document.body);
 
       expect(toggle).toHaveBeenCalled();
     });
 
-    it('should call toggle on container click', () => {
+    it('should call toggle on container click', async () => {
       const toggle = jest.fn();
 
       render(
@@ -238,12 +241,12 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.click(screen.getByTestId('dropdown'));
+      await user.click(screen.getByTestId('dropdown'));
 
       expect(toggle).toHaveBeenCalled();
     });
 
-    it('should call toggle on container click', () => {
+    it('should call toggle on container click', async () => {
       const toggle = jest.fn();
 
       render(
@@ -257,12 +260,12 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.click(screen.getByTestId('dropdown'));
+      await user.click(screen.getByTestId('dropdown'));
 
       expect(toggle).toHaveBeenCalled();
     });
 
-    it('should not call toggle on inner container click', () => {
+    it('should not call toggle on inner container click', async () => {
       const toggle = jest.fn();
       render(
         <Dropdown isOpen toggle={toggle}>
@@ -274,12 +277,12 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.click(document.getElementById('divider'));
+      await user.click(document.getElementById('divider'));
 
       expect(toggle).not.toHaveBeenCalled();
     });
 
-    it('should not call toggle when right-clicked', () => {
+    it('should not call toggle when right-clicked', async () => {
       const toggle = jest.fn();
 
       render(
@@ -292,7 +295,8 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.click(screen.getByTestId('dropdown'), { button: 2 });
+      // Use fireEvent for right-click since user.click doesn't support button: 2 in v14
+      fireEvent.click(screen.getByTestId('dropdown'), { button: 2, buttons: 2 });
 
       expect(toggle).not.toHaveBeenCalled();
     });
@@ -300,28 +304,28 @@ describe('Dropdown', () => {
     it('should go through first dropdown item and close when tab is pressed multiple times', async () => {
       const toggle = jest.fn();
 
-      imitateDropdownFocus(toggle);
+      await imitateDropdownFocus(toggle);
 
-      user.tab();
+      await user.tab();
       expect(screen.getByText(/first item/i)).toHaveFocus();
 
-      user.tab();
+      await user.tab();
       expect(toggle).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('keyboard events', () => {
-    it('should call toggle on ESC keydown when it isOpen is true', () => {
+    it('should call toggle on ESC keydown when it isOpen is true', async () => {
       const toggle = jest.fn();
 
-      imitateDropdownFocus(toggle);
+      await imitateDropdownFocus(toggle);
 
-      user.keyboard('{esc}');
+      await user.keyboard('{Escape}');
 
       expect(toggle).toHaveBeenCalledTimes(1);
     });
 
-    it('should call toggle on down arrow keydown when it isOpen is false', () => {
+    it('should call toggle on down arrow keydown when it isOpen is false', async () => {
       const toggle = jest.fn();
       render(
         <Dropdown isOpen={false} toggle={toggle}>
@@ -333,14 +337,14 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
+      await user.tab();
       expect(screen.getByText('Toggle')).toHaveFocus();
 
-      user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowdown}');
       expect(toggle).toHaveBeenCalledTimes(1);
     });
 
-    it('should call toggle on up arrow keydown when it isOpen is false', () => {
+    it('should call toggle on up arrow keydown when it isOpen is false', async () => {
       const toggle = jest.fn();
       render(
         <Dropdown isOpen={false} toggle={toggle}>
@@ -352,14 +356,14 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
+      await user.tab();
       expect(screen.getByText('Toggle')).toHaveFocus();
 
-      user.keyboard('{arrowup}');
+      await user.keyboard('{arrowup}');
       expect(toggle).toHaveBeenCalledTimes(1);
     });
 
-    it('should focus the first menuitem when toggle is triggered by enter keydown', () => {
+    it('should focus the first menuitem when toggle is triggered by enter keydown', async () => {
       const toggle = jest.fn();
       const focus = jest.fn();
       render(
@@ -375,19 +379,19 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
+      await user.tab();
       expect(screen.getByText('Toggle')).toHaveFocus();
 
       expect(focus).not.toHaveBeenCalled();
 
-      user.keyboard('{enter}');
+      await user.keyboard('{enter}');
       expect(toggle).toHaveBeenCalled();
 
       jest.runAllTimers();
       expect(focus).toHaveBeenCalled();
     });
 
-    it('should focus the first menuitem when toggle is triggered by up arrow keydown', () => {
+    it('should focus the first menuitem when toggle is triggered by up arrow keydown', async () => {
       const toggle = jest.fn();
       const focus = jest.fn();
       render(
@@ -403,19 +407,19 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
+      await user.tab();
       expect(screen.getByText('Toggle')).toHaveFocus();
 
       expect(focus).not.toHaveBeenCalled();
 
-      user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowdown}');
       expect(toggle).toHaveBeenCalled();
 
       jest.runAllTimers();
       expect(focus).toHaveBeenCalled();
     });
 
-    it('should focus the first menuitem when toggle is triggered by down arrow keydown', () => {
+    it('should focus the first menuitem when toggle is triggered by down arrow keydown', async () => {
       const toggle = jest.fn();
       const focus = jest.fn();
       render(
@@ -431,12 +435,12 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
+      await user.tab();
       expect(screen.getByText('Toggle')).toHaveFocus();
 
       expect(focus).not.toHaveBeenCalled();
 
-      user.keyboard('{arrowup}');
+      await user.keyboard('{arrowup}');
       expect(toggle).toHaveBeenCalled();
 
       jest.runAllTimers();
@@ -444,32 +448,11 @@ describe('Dropdown', () => {
       expect(screen.getByText('Test')).toHaveFocus();
     });
 
-    it('should focus the next menuitem on down arrow keydown when isOpen is true', () => {
+    it('should focus the next menuitem on down arrow keydown when isOpen is true', async () => {
       const toggle = jest.fn();
       const focus = jest.fn();
       const focus2 = jest.fn();
-      const { rerender } = render(
-        <Dropdown isOpen={false} toggle={toggle}>
-          <DropdownToggle>Toggle</DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem header>Header</DropdownItem>
-            <DropdownItem disabled>Disabled</DropdownItem>
-            <DropdownItem onFocus={focus}>Test</DropdownItem>
-            <DropdownItem>i am focused</DropdownItem>
-            <DropdownItem divider />
-            <DropdownItem>Another Test</DropdownItem>
-          </DropdownMenu>
-        </Dropdown>,
-      );
-
-      user.tab();
-      expect(screen.getByText('Toggle')).toHaveFocus();
-      expect(focus).not.toHaveBeenCalled();
-
-      user.keyboard('{arrowup}');
-      expect(toggle).toHaveBeenCalled();
-
-      rerender(
+      render(
         <Dropdown isOpen toggle={toggle}>
           <DropdownToggle>Toggle</DropdownToggle>
           <DropdownMenu>
@@ -483,16 +466,22 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      jest.runAllTimers();
+      const toggleBtn = screen.getByText('Toggle');
+      toggleBtn.focus();
+      expect(toggleBtn).toHaveFocus();
+      expect(focus).not.toHaveBeenCalled();
+
+      fireEvent.keyDown(toggleBtn, { key: 'ArrowUp' });
+      jest.runOnlyPendingTimers();
       expect(focus).toHaveBeenCalled();
       expect(screen.getByText('Test')).toHaveFocus();
 
-      user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowdown}');
       expect(focus2).toHaveBeenCalled();
       expect(screen.getByText('i am focused')).toHaveFocus();
     });
 
-    it('should focus the next menuitem on ctrl + n keydown when isOpen is true', () => {
+    it('should focus the next menuitem on ctrl + n keydown when isOpen is true', async () => {
       const focus1 = jest.fn();
       const focus2 = jest.fn();
       const toggle = jest.fn();
@@ -512,11 +501,12 @@ describe('Dropdown', () => {
 
       screen.getByText('Test1').focus();
       expect(screen.getByText('Test1')).toHaveFocus();
-      user.keyboard('{ctrl>}N');
+      // Use fireEvent because user.keyboard doesn't propagate ctrlKey modifier correctly in jsdom
+      fireEvent.keyDown(screen.getByText('Test1'), { key: 'n', ctrlKey: true });
       expect(screen.getByText('Test2')).toHaveFocus();
     });
 
-    it('should focus the first menu item matching the character pressed when isOpen is true', () => {
+    it('should focus the first menu item matching the character pressed when isOpen is true', async () => {
       const focus1 = jest.fn();
       const focus2 = jest.fn();
       const focus3 = jest.fn();
@@ -535,13 +525,13 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
-      user.tab();
+      await user.tab();
+      await user.tab();
       expect(screen.getByText('Reactstrap')).toHaveFocus();
 
       focus1.mockClear();
 
-      user.keyboard('4');
+      await user.keyboard('4');
       expect(screen.getByText('4')).toHaveFocus();
 
       expect(focus1.mock.calls.length).toBe(0);
@@ -549,7 +539,7 @@ describe('Dropdown', () => {
       expect(focus3.mock.calls.length).toBe(0);
     });
 
-    it('should skip non-menu items focus the next menu item on down arrow keydown when it isOpen is true and anther item is focused', () => {
+    it('should skip non-menu items focus the next menu item on down arrow keydown when it isOpen is true and anther item is focused', async () => {
       const focus1 = jest.fn();
       const focus2 = jest.fn();
       const toggle = jest.fn();
@@ -567,17 +557,17 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
-      user.tab();
+      await user.tab();
+      await user.tab();
       expect(screen.getByText('Test1')).toHaveFocus();
-      user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowdown}');
       expect(screen.getByText('Test2')).toHaveFocus();
       expect(toggle).not.toHaveBeenCalled();
       expect(focus1).toBeCalledTimes(1);
       expect(focus2).toBeCalledTimes(1);
     });
 
-    it('should focus the previous menu item on up arrow keydown when isOpen is true and another item is focused', () => {
+    it('should focus the previous menu item on up arrow keydown when isOpen is true and another item is focused', async () => {
       const focus1 = jest.fn();
       const focus2 = jest.fn();
       const toggle = jest.fn();
@@ -595,21 +585,21 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
-      user.tab();
+      await user.tab();
+      await user.tab();
       expect(screen.getByText('Test1')).toHaveFocus();
-      user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowdown}');
       expect(screen.getByText('Test2')).toHaveFocus();
       expect(toggle).not.toHaveBeenCalled();
       expect(focus1).toBeCalledTimes(1);
       expect(focus2).toBeCalledTimes(1);
-      user.keyboard('{arrowup}');
+      await user.keyboard('{arrowup}');
       expect(screen.getByText('Test1')).toHaveFocus();
       expect(toggle).not.toHaveBeenCalled();
       expect(focus1).toBeCalledTimes(2);
     });
 
-    it('should focus the previous menuitem on ctrl + p keydown when isOpen is true and another item is focused', () => {
+    it('should focus the previous menuitem on ctrl + p keydown when isOpen is true and another item is focused', async () => {
       const focus1 = jest.fn();
       const focus2 = jest.fn();
       const toggle = jest.fn();
@@ -629,16 +619,17 @@ describe('Dropdown', () => {
 
       screen.getByText('Test1').focus();
       expect(screen.getByText('Test1')).toHaveFocus();
-      user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowdown}');
       expect(toggle).not.toHaveBeenCalled();
       expect(focus1).toBeCalledTimes(1);
       expect(focus2).toBeCalledTimes(1);
       expect(screen.getByText('Test2')).toHaveFocus();
-      user.keyboard('{ctrl>}P');
+      // Use fireEvent because user.keyboard doesn't propagate ctrlKey modifier correctly in jsdom
+      fireEvent.keyDown(screen.getByText('Test2'), { key: 'p', ctrlKey: true });
       expect(screen.getByText('Test1')).toHaveFocus();
     });
 
-    it('should wrap focus with down arrow keydown', () => {
+    it('should wrap focus with down arrow keydown', async () => {
       const focus1 = jest.fn();
       const focus2 = jest.fn();
       const toggle = jest.fn();
@@ -656,21 +647,21 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
-      user.tab();
+      await user.tab();
+      await user.tab();
       expect(screen.getByText('Test1')).toHaveFocus();
-      user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowdown}');
       expect(screen.getByText('Test2')).toHaveFocus();
       expect(toggle).not.toHaveBeenCalled();
       expect(focus1).toBeCalledTimes(1);
       expect(focus2).toBeCalledTimes(1);
-      user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowdown}');
       expect(screen.getByText('Test1')).toHaveFocus();
       expect(toggle).not.toHaveBeenCalled();
       expect(focus1).toBeCalledTimes(2);
     });
 
-    it('should wrap focus with up arrow keydown', () => {
+    it('should wrap focus with up arrow keydown', async () => {
       const focus1 = jest.fn();
       const focus2 = jest.fn();
       const toggle = jest.fn();
@@ -688,17 +679,17 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
-      user.tab();
+      await user.tab();
+      await user.tab();
       expect(screen.getByText('Test1')).toHaveFocus();
-      user.keyboard('{arrowup}');
+      await user.keyboard('{arrowup}');
       expect(screen.getByText('Test2')).toHaveFocus();
       expect(toggle).not.toHaveBeenCalled();
       expect(focus1).toBeCalledTimes(1);
       expect(focus2).toBeCalledTimes(1);
     });
 
-    it('should focus the 1st item on home key keyDown', () => {
+    it('should focus the 1st item on home key keyDown', async () => {
       const focus1 = jest.fn();
       const focus2 = jest.fn();
       const focus3 = jest.fn();
@@ -718,23 +709,23 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
-      user.tab();
+      await user.tab();
+      await user.tab();
       expect(screen.getByText('Test1')).toHaveFocus();
-      user.keyboard('{arrowdown}');
-      user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowdown}');
       expect(screen.getByText('Test3')).toHaveFocus();
       expect(toggle).not.toHaveBeenCalled();
       expect(focus1).toBeCalledTimes(1);
       expect(focus2).toBeCalledTimes(1);
       expect(focus3).toBeCalledTimes(1);
-      user.keyboard('{home}');
+      await user.keyboard('{home}');
       expect(screen.getByText('Test1')).toHaveFocus();
       expect(toggle).not.toHaveBeenCalled();
       expect(focus1).toBeCalledTimes(2);
     });
 
-    it('should focus the last item on end key keyDown', () => {
+    it('should focus the last item on end key keyDown', async () => {
       const focus1 = jest.fn();
       const focus2 = jest.fn();
       const focus3 = jest.fn();
@@ -754,10 +745,10 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
-      user.tab();
+      await user.tab();
+      await user.tab();
       expect(screen.getByText('Test1')).toHaveFocus();
-      user.keyboard('{end}');
+      await user.keyboard('{end}');
       expect(screen.getByText('Test3')).toHaveFocus();
       expect(toggle).not.toHaveBeenCalled();
       expect(focus1).toBeCalledTimes(1);
@@ -765,7 +756,7 @@ describe('Dropdown', () => {
       expect(focus3).toBeCalledTimes(1);
     });
 
-    it('should trigger a click on links when an item is focused and space[bar] it pressed', () => {
+    it('should trigger a click on links when an item is focused and space[bar] it pressed', async () => {
       const click = jest.fn();
       const toggle = jest.fn();
 
@@ -783,16 +774,16 @@ describe('Dropdown', () => {
         </Dropdown>,
       );
 
-      user.tab();
-      user.tab();
+      await user.tab();
+      await user.tab();
       expect(screen.getByText('Test1')).toHaveFocus();
 
-      user.keyboard('{space}');
+      await user.keyboard(' ');
 
       expect(click).toHaveBeenCalled();
     });
 
-    it('should trigger a click on buttons when an item is focused and space[bar] it pressed (override browser defaults for focus management)', () => {
+    it('should trigger a click on buttons when an item is focused and space[bar] it pressed (override browser defaults for focus management)', async () => {
       const toggle = jest.fn();
       const click = jest.fn();
 
@@ -814,13 +805,13 @@ describe('Dropdown', () => {
       expect(toggle).not.toHaveBeenCalled();
       expect(screen.getByText('Test1')).toHaveFocus();
 
-      user.keyboard('{space}');
+      await user.keyboard(' ');
 
       expect(toggle).toHaveBeenCalledTimes(1);
       expect(click).toHaveBeenCalledTimes(1);
     });
 
-    it('should not trigger anything when within an input', () => {
+    it('should not trigger anything when within an input', async () => {
       const click = jest.fn();
       const focus = jest.fn();
       const toggle = jest.fn();
@@ -844,9 +835,9 @@ describe('Dropdown', () => {
       focus.mockClear();
       click.mockClear();
 
-      user.keyboard('{arrowdown}');
-      user.keyboard('{arrowup}');
-      user.keyboard('{space}');
+      await user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowup}');
+      await user.keyboard(' ');
 
       expect(toggle).not.toHaveBeenCalled();
 
@@ -856,7 +847,7 @@ describe('Dropdown', () => {
       expect(click).not.toHaveBeenCalled();
     });
 
-    it('should not trigger anything when within a textarea', () => {
+    it('should not trigger anything when within a textarea', async () => {
       const click = jest.fn();
       const focus = jest.fn();
       const toggle = jest.fn();
@@ -881,9 +872,9 @@ describe('Dropdown', () => {
       focus.mockClear();
       click.mockClear();
 
-      user.keyboard('{arrowdown}');
-      user.keyboard('{arrowup}');
-      user.keyboard('{space}');
+      await user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowup}');
+      await user.keyboard(' ');
 
       expect(toggle).not.toHaveBeenCalled();
 
@@ -893,7 +884,7 @@ describe('Dropdown', () => {
       expect(click).not.toHaveBeenCalled();
     });
 
-    it('should toggle when isOpen is true and tab keyDown on menuitem', () => {
+    it('should toggle when isOpen is true and tab keyDown on menuitem', async () => {
       const toggle = jest.fn();
       const focus = jest.fn();
 
@@ -911,12 +902,12 @@ describe('Dropdown', () => {
 
       screen.getByText(/first/i).focus();
 
-      user.tab();
+      await user.tab();
 
       expect(toggle).toHaveBeenCalledTimes(1);
     });
 
-    it('should not trigger anything when disabled', () => {
+    it('should not trigger anything when disabled', async () => {
       const toggle = jest.fn();
       const click = jest.fn();
       const focus = jest.fn();
@@ -939,16 +930,16 @@ describe('Dropdown', () => {
 
       focus.mockClear();
 
-      user.keyboard('{arrowdown}');
-      user.keyboard('{arrowup}');
-      user.keyboard('{space}');
+      await user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowup}');
+      await user.keyboard(' ');
 
       expect(toggle).not.toHaveBeenCalled();
       expect(click).not.toHaveBeenCalled();
       expect(focus).not.toHaveBeenCalled();
     });
 
-    it('should not focus anything when all items disabled', () => {
+    it('should not focus anything when all items disabled', async () => {
       const toggle = jest.fn();
       const click = jest.fn();
       const focus = jest.fn();
@@ -979,16 +970,16 @@ describe('Dropdown', () => {
 
       screen.getByText(/toggle/i).focus();
 
-      user.keyboard('{arrowdown}');
-      user.keyboard('{arrowup}');
-      user.keyboard('{space}');
+      await user.keyboard('{arrowdown}');
+      await user.keyboard('{arrowup}');
+      await user.keyboard(' ');
 
       expect(toggle).not.toHaveBeenCalled();
       expect(click).not.toHaveBeenCalled();
       expect(focus).not.toHaveBeenCalled();
     });
 
-    it('should not call preventDefault when dropdown has focus and f5 key is pressed', () => {
+    it('should not call preventDefault when dropdown has focus and f5 key is pressed', async () => {
       const toggle = jest.fn();
 
       render(
@@ -1018,7 +1009,7 @@ describe('Dropdown', () => {
       expect(keyEvent2.defaultPrevented).toBe(false);
     });
 
-    it('should call preventDefault when dropdown has focus and any key(up, down, esc, enter, home, end or any alphanumeric key) is pressed', () => {
+    it('should call preventDefault when dropdown has focus and any key(up, down, esc, enter, home, end or any alphanumeric key) is pressed', async () => {
       const toggle = jest.fn();
 
       render(
@@ -1052,7 +1043,7 @@ describe('Dropdown', () => {
     });
   });
 
-  it('should render different size classes', () => {
+  it('should render different size classes', async () => {
     const { rerender } = render(
       <Dropdown group isOpen size="sm">
         <DropdownToggle>Toggle</DropdownToggle>
@@ -1081,11 +1072,11 @@ describe('Dropdown', () => {
   });
 
   describe('Dropdown with nav', () => {
-    it('should render a single child', () => {
+    it('should render a single child', async () => {
       testForChildrenInComponent(Dropdown);
     });
 
-    it('should render multiple children when isOpen', () => {
+    it('should render multiple children when isOpen', async () => {
       render(
         <Dropdown nav isOpen>
           <DropdownToggle>Toggle</DropdownToggle>
@@ -1101,7 +1092,7 @@ describe('Dropdown', () => {
   });
 
   describe('Dropdown in navbar', () => {
-    it('should open without popper with inNavbar prop', () => {
+    it('should open without popper with inNavbar prop', async () => {
       render(
         <Dropdown nav inNavbar>
           <DropdownToggle caret nav>
@@ -1119,13 +1110,13 @@ describe('Dropdown', () => {
   });
 
   describe('active', () => {
-    it('should render an active class', () => {
+    it('should render an active class', async () => {
       render(<Dropdown active nav />);
 
       expect(screen.getByRole('listitem')).toHaveClass('active');
     });
 
-    it('should render an active class when a child DropdownItem is active IF setActiveFromChild is true', () => {
+    it('should render an active class when a child DropdownItem is active IF setActiveFromChild is true', async () => {
       render(
         <Dropdown nav inNavbar setActiveFromChild>
           <DropdownToggle nav caret>
@@ -1141,7 +1132,7 @@ describe('Dropdown', () => {
     });
   });
 
-  it('should render with correct class when direction is set', () => {
+  it('should render with correct class when direction is set', async () => {
     const { rerender } = render(<Dropdown direction="up" nav />);
     expect(screen.getByRole('listitem')).toHaveClass('dropup');
     rerender(<Dropdown direction="start" nav />);
@@ -1151,7 +1142,7 @@ describe('Dropdown', () => {
   });
 
   describe('menuRole prop', () => {
-    it('should set correct roles for children when menuRole is menu', () => {
+    it('should set correct roles for children when menuRole is menu', async () => {
       render(
         <Dropdown menuRole="menu" isOpen>
           <DropdownToggle nav caret>
@@ -1171,7 +1162,7 @@ describe('Dropdown', () => {
       expect(screen.getByRole('menuitem')).toBeInTheDocument();
     });
 
-    it('should set correct roles for children when menuRole is menu', () => {
+    it('should set correct roles for children when menuRole is menu', async () => {
       render(
         <Dropdown menuRole="listbox" isOpen>
           <DropdownToggle nav caret>

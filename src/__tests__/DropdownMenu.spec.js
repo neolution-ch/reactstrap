@@ -1,6 +1,6 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
-import { Popper } from 'react-popper';
+import { Popper } from '@neolution-ch/react-popper';
 import '@testing-library/jest-dom';
 import { DropdownMenu } from '..';
 import { customDropdownRender } from '../testUtils';
