@@ -1,8 +1,10 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import user from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import { UncontrolledCollapse } from '..';
+
+let user;
 
 describe('UncontrolledCollapse', () => {
   let toggler;
@@ -19,6 +21,7 @@ describe('UncontrolledCollapse', () => {
     togglers = document.getElementsByClassName('toggler');
 
     jest.useFakeTimers();
+    user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime.bind(jest) });
   });
 
   afterEach(() => {
@@ -46,7 +49,7 @@ describe('UncontrolledCollapse', () => {
     );
 
     await user.click(screen.getByText(/click me/i));
-    jest.advanceTimersByTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
 
     expect(screen.getByTestId('collapse')).toHaveClass('show');
   });
@@ -61,11 +64,11 @@ describe('UncontrolledCollapse', () => {
     expect(screen.getByTestId('collapse')).not.toHaveClass('show');
 
     await user.click(screen.getByText(/toggler 1/i));
-    jest.advanceTimersByTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
     expect(screen.getByTestId('collapse')).toHaveClass('show');
 
     await user.click(screen.getByText(/toggler 2/i));
-    jest.advanceTimersByTime(1000);
+    act(() => jest.advanceTimersByTime(1000));
     expect(screen.getByTestId('collapse')).not.toHaveClass('show');
   });
 });

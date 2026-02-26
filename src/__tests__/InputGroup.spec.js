@@ -51,7 +51,7 @@ describe('InputGroup', () => {
       expect(screen.getByTestId('drpdwn')).toHaveClass('dropdown');
     });
 
-    it('should call toggle when input is clicked', () => {
+    it('should call toggle when input is clicked', async () => {
       const toggle = jest.fn();
 
       render(
@@ -66,7 +66,7 @@ describe('InputGroup', () => {
       );
 
       expect(toggle).not.toBeCalled();
-      user.click(document.querySelector('input.form-control'));
+      await user.click(document.querySelector('input.form-control'));
       expect(toggle).toBeCalled();
     });
   });

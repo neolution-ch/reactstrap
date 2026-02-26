@@ -16,29 +16,29 @@ describe('CloseButton', () => {
   });
 
   describe('onClick', () => {
-    it('calls props.onClick if it exists', () => {
+    it('calls props.onClick if it exists', async () => {
       const onClick = jest.fn();
       render(<CloseButton onClick={onClick} data-testid="btn-close" />);
 
-      user.click(screen.getByTestId('btn-close'));
+      await user.click(screen.getByTestId('btn-close'));
       expect(onClick).toHaveBeenCalled();
     });
 
-    it('returns the value returned by props.onClick', () => {
+    it('returns the value returned by props.onClick', async () => {
       const onClick = jest.fn(() => 1234);
       render(<CloseButton onClick={onClick} data-testid="btn-close" />);
 
-      user.click(screen.getByTestId('btn-close'));
+      await user.click(screen.getByTestId('btn-close'));
 
       expect(onClick.mock.results[0].value).toBe(1234);
     });
 
-    it('is not called when disabled', () => {
+    it('is not called when disabled', async () => {
       const onClick = jest.fn();
       render(
         <CloseButton onClick={onClick} disabled data-testid="btn-close" />,
       );
-      user.click(screen.getByTestId('btn-close'));
+      await user.click(screen.getByTestId('btn-close'));
 
       expect(onClick).not.toHaveBeenCalled();
     });

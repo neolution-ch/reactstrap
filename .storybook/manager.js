@@ -1,5 +1,5 @@
-import { addons } from '@storybook/addons';
-import { STORY_RENDERED } from '@storybook/core-events'
+import { addons } from '@storybook/manager-api';
+import { STORY_RENDERED } from '@storybook/core-events';
 import { create } from '@storybook/theming';
 
 const theme = create({
@@ -28,7 +28,7 @@ addons.register('TitleAddon', api => {
     if (!storyData) {
         title = customTitle;
     } else {
-        title = `${storyData.kind} - ${storyData.name} ⋅ ${customTitle}`
+        title = `${storyData.title} - ${storyData.name} ⋅ ${customTitle}`
     }
 
     if (document.title !== title) {

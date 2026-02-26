@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
-import { Popper } from 'react-popper';
+import { Popper } from '@neolution-ch/react-popper';
 import { DropdownContext } from './DropdownContext';
 import {
   mapToCssModules,
@@ -109,7 +109,7 @@ class DropdownMenu extends React.Component {
             };
 
             const handleRef = (tagRef) => {
-              // Send the ref to `react-popper`
+              // Send the ref to `@neolution-ch/react-popper`
               ref(tagRef);
               // Send the ref to the parent Dropdown so that clicks outside
               // it will cause it to close
