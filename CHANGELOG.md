@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### dependabot: \#7 build(deps): bump svgo from 2.7.0 to 2.8.2
+
 ## [10.0.0] - 2026-02-24
 
 - Added support for React 19
