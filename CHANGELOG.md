@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### dependabot: \#8 build(deps): bump flatted from 3.2.2 to 3.4.2
+
 ## [10.0.0] - 2026-02-24
 
 - Added support for React 19
