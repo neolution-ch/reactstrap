@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### dependabot: \#9 build(deps): bump handlebars from 4.7.7 to 4.7.9
+
 ## [10.0.0] - 2026-02-24
 
 - Added support for React 19
