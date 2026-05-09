@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### dependabot: \#13 build(deps): bump fast-uri from 3.1.0 to 3.1.2
+
 ## [10.0.0] - 2026-02-24
 
 - Added support for React 19
